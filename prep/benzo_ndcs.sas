@@ -1,0 +1,297 @@
+/*********************************************************************************************/
+title1 'Benzodiazepines';
+
+* Author: PF;
+* Purpose: Organize and isolate benzo NDCs according to class as outlined in benzo document;
+* Input: fdb_ndc_extract;
+* Output: fdb_benzo;
+
+options compress=yes nocenter ls=150 ps=200 errors=5 mprint merror
+	mergenoby=warn varlenchk=error dkricond=error dkrocond=error msglevel=i;
+/*********************************************************************************************/
+
+data fdb_benzo;
+	set base.fdb_ndc_extract (keep=ndc bn gnn gnn60 hic3_desc ahfs_desc);
+
+	* class 1;	
+	if FIND(GNN60,"CHLORDIAZEPOXIDE") then do;
+		class1=1;
+		if find(gnn60,"/")=0 then chlordiazepoxide=1;
+		else chlordiazepoxide_combo=1;
+	end;
+	if  FIND(GNN60,"CLORAZEPATE") then do;
+		class1=1;
+		if find(gnn60,"/")=0 then clorazepate=1;
+		else clorazepate_combo=1;
+	end;
+	if FIND(GNN60,"DIAZEPAM") then do;
+		class1=1;
+		if find(gnn60,"/")=0 then diazepam=1;
+		else diazepam_combo=1;
+	end;
+	if FIND(GNN60,"FLURAZEPAM") then do;
+		class1=1;
+		if find(gnn60,"/")=0 then flurazepam=1;
+		else flurazepam_combo=1;
+	end;
+	if FIND(GNN60,"HALAZEPAM") then do;
+		class1=1;
+		if find(gnn60,"/")=0 then halazepam=1;
+		else halazepam_combo=1;
+	end;
+	if FIND(GNN60,"PRAZEPAM") then do;
+		class1=1;
+		if find(gnn60,"/")=0 then prazepam=1;
+		else prazepam_combo=1;
+	end;
+	if FIND(GNN60,"QUAZEPAM") then do;
+		class1=1;
+		if find(gnn60,"/")=0 then quazepam=1;
+		else quazepam_combo=1;
+	end;
+	if FIND(GNN60,"ALPRAZOLAM") then do;
+		class1=1;
+		if find(gnn60,"/")=0 then alprazolam=1;
+		else alprazolam_combo=1;
+	end;
+	if FIND(GNN60,"CLONAZEPAM") then do;
+		class1=1;
+		if find(gnn60,"/")=0 then clonazepam=1;
+		else clonazepam_combo=1;
+	end;
+	if FIND(GNN60,"ESTAZOLAM") then do;
+		class1=1;
+		if find(gnn60,"/")=0 then estazolam=1;
+		else estazolam_combo=1;
+	end;
+	if FIND(GNN60,"LORAZEPAM") then do;
+		class1=1;
+		if find(gnn60,"/")=0 then lorazepam=1;
+		else lorazepam_combo=1;
+	end;
+	if FIND(GNN60,"MIDAZOLAM") then do;
+		class1=1;
+		if find(gnn60,"/")=0 then midazolam=1;
+		else midazolam_combo=1;
+	end;
+	if FIND(GNN60,"OXAZEPAM") then do;
+		class1=1;
+		if find(gnn60,"/")=0 then oxazepam=1;
+		else oxazepam_combo=1;
+	end;
+	if FIND(GNN60,"TEMAZEPAM") then do;
+		class1=1;
+		if find(gnn60,"/")=0 then temazepam=1;
+		else temazepam_combo=1;
+	end;
+	if FIND(GNN60,"TRIAZOLAM") then do;
+		class1=1;
+		if find(gnn60,"/")=0 then triazolam=1;
+		else triazolam_combo=1;
+	end;
+	
+	* class 2;
+	if FIND(GNN60,"ZALEPLON") then do;
+		class2=1;
+		if find(gnn60,"/")=0 then zaleplon=1;
+		else zaleplon_combo=1;
+	end;
+	if FIND(GNN60,"ESZOPICLONE") then do;
+		class2=1;
+		if find(gnn60,"/")=0 then eszopiclone=1;
+		else eszopiclone_combo=1;
+	end;
+	if FIND(GNN60,"ZOLPIDEM") then do;
+		class2=1;
+		if find(gnn60,"/")=0 then zolpidem=1;
+		else zolpidem_combo=1;
+	end;
+	if FIND(GNN60,"ZOPICLONE") then do;
+		class2=1;
+		if find(gnn60,"/")=0 then zopiclone=1;
+		else zopiclone_combo=1;
+	end;
+ 
+	* class 3;
+	if FIND(GNN60,"BUSPIRONE") then do;
+		class3=1;
+		if find(gnn60,"/") then buspirone=1;
+		else buspirone_combo=1;
+	end;
+	if FIND(GNN60,"HYDROXYZINE") then do;
+		class3=1;
+		if find(gnn60,"/") then hydroxyzine=1;
+		else hydroxyzine_combo=1;
+	end;
+	if FIND(GNN60,"GABAPENTIN") then do;
+		class3=1;
+		if find(gnn60,"/") then gabapentin=1;
+		else gabapentin_combo=1;
+	end;
+
+	* class 4;
+	if hic3_desc in("SEROTONIN-NOREPINEPHRINE REUPTAKE-INHIB (SNRIS)","SELECTIVE SEROTONIN REUPTAKE INHIBITOR (SSRIS)") then class4=1;
+
+	if max(of class1-class4)=1;
+run;
+
+%macro pdch;
+%do year=2006 %to 2017;
+data pdch&year;
+	set pdch&year..drug_char_&year._extract;
+	by ndc;
+	* class 1;	
+	if FIND(gnn,"CHLORDIAZEPOXIDE") then do;
+		class1=1;
+		if find(gnn,"/")=0 then chlordiazepoxide=1;
+		else chlordiazepoxide_combo=1;
+	end;
+	if  FIND(gnn,"CLORAZEPATE") then do;
+		class1=1;
+		if find(gnn,"/")=0 then clorazepate=1;
+		else clorazepate_combo=1;
+	end;
+	if FIND(gnn,"DIAZEPAM") then do;
+		class1=1;
+		if find(gnn,"/")=0 then diazepam=1;
+		else diazepam_combo=1;
+	end;
+	if FIND(gnn,"FLURAZEPAM") then do;
+		class1=1;
+		if find(gnn,"/")=0 then flurazepam=1;
+		else flurazepam_combo=1;
+	end;
+	if FIND(gnn,"HALAZEPAM") then do;
+		class1=1;
+		if find(gnn,"/")=0 then halazepam=1;
+		else halazepam_combo=1;
+	end;
+	if FIND(gnn,"PRAZEPAM") then do;
+		class1=1;
+		if find(gnn,"/")=0 then prazepam=1;
+		else prazepam_combo=1;
+	end;
+	if FIND(gnn,"QUAZEPAM") then do;
+		class1=1;
+		if find(gnn,"/")=0 then quazepam=1;
+		else quazepam_combo=1;
+	end;
+	if FIND(gnn,"ALPRAZOLAM") then do;
+		class1=1;
+		if find(gnn,"/")=0 then alprazolam=1;
+		else alprazolam_combo=1;
+	end;
+	if FIND(gnn,"CLONAZEPAM") then do;
+		class1=1;
+		if find(gnn,"/")=0 then clonazepam=1;
+		else clonazepam_combo=1;
+	end;
+	if FIND(gnn,"ESTAZOLAM") then do;
+		class1=1;
+		if find(gnn,"/")=0 then estazolam=1;
+		else estazolam_combo=1;
+	end;
+	if FIND(gnn,"LORAZEPAM") then do;
+		class1=1;
+		if find(gnn,"/")=0 then lorazepam=1;
+		else lorazepam_combo=1;
+	end;
+	if FIND(gnn,"MIDAZOLAM") then do;
+		class1=1;
+		if find(gnn,"/")=0 then midazolam=1;
+		else midazolam_combo=1;
+	end;
+	if FIND(gnn,"OXAZEPAM") then do;
+		class1=1;
+		if find(gnn,"/")=0 then oxazepam=1;
+		else oxazepam_combo=1;
+	end;
+	if FIND(gnn,"TEMAZEPAM") then do;
+		class1=1;
+		if find(gnn,"/")=0 then temazepam=1;
+		else temazepam_combo=1;
+	end;
+	if FIND(gnn,"TRIAZOLAM") then do;
+		class1=1;
+		if find(gnn,"/")=0 then traizolam=1;
+		else triazolam_combo=1;
+	end;
+	
+	* class 2;
+	if FIND(gnn,"ZALEPLON") then do;
+		class2=1;
+		if find(gnn,"/")=0 then zaleplon=1;
+		else zaleplon_combo=1;
+	end;
+	if FIND(gnn,"ESZOPICLONE") then do;
+		class2=1;
+		if find(gnn,"/")=0 then eszopiclone=1;
+		else eszopiclone_combo=1;
+	end;
+	if FIND(gnn,"ZOLPIDEM") then do;
+		class2=1;
+		if find(gnn,"/")=0 then zolpidem=1;
+		else zolpidem_combo=1;
+	end;
+	if FIND(gnn,"ZOPICLONE") then do;
+		class2=1;
+		if find(gnn,"/")=0 then zopiclone=1;
+		else zopiclone_combo=1;
+	end;
+ 
+	* class 3;
+	if FIND(gnn,"BUSPIRONE") then do;
+		class3=1;
+		if find(gnn,"/") then buspirone=1;
+		else buspirone_combo=1;
+	end;
+	if FIND(gnn,"HYDROXYZINE") then do;
+		class3=1;
+		if find(gnn,"/") then hydroxyzine=1;
+		else hydroxyzine_combo=1;
+	end;
+	if FIND(gnn,"GABAPENTIN") then do;
+		class3=1;
+		if find(gnn,"/") then gabapentin=1;
+		else gabapentin_combo=1;
+	end;
+
+	class4=.;
+
+	if max(of class1-class3)=1;
+run;
+%end;
+
+data pdch_benzos;
+	merge 
+		%do yr=2006 %to 2017;
+			pdch&yr (in=_in&yr.)
+		%end;;
+	by ndc;
+	array in [2006:2017] in2006-in2017;
+	%do yr=2006 %to 2017;
+		if _in&yr.=1 then in[&yr.]=1;
+	%end;
+run;
+%mend;
+
+%pdch;
+
+* Compare to NDCS found in First Data Bank;
+proc sort data=fdb_benzo; by ndc; run;
+
+data &outlib..benzo_ndcs;
+	merge pdch_benzos (in=a rename=gnn=gnn_pdch) fdb_benzo (in=b);
+	by ndc;
+	pd=a;
+	fdb=b;
+run;
+
+proc freq data=&outlib..benzo_ndcs;
+tables pd*fdb;
+run;
+
+
+
+
+																																																																																																																																																																											
